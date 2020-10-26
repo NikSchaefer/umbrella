@@ -1,21 +1,45 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { TouchableOpacity, Button, Image, StyleSheet, Text, View, TextInput } from 'react-native';
 import { LinearGradient } from "expo-linear-gradient";
 import * as Location from 'expo-location';
-import * as BackgroundFetch  from 'expo-background-fetch';
+import * as BackgroundFetch from 'expo-background-fetch';
 import * as TaskManager from 'expo-task-manager';
+import * as Notifications from 'expo-notifications';
+import * as Permissions from 'expo-permissions';
+
+
 
 
 import { config } from './config'
 
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: false,
+    shouldSetBadge: false,
+  }),
+});
+
 export default function App() {
+
+
+
+  const [expoPushToken, setExpoPushToken] = useState('');
+  const [notification, setNotification] = useState(false);
+  const notificationListener = useRef();
+  const responseListener = useRef();
+
+
+
+
 
   function kToF(value) { // kelvin to fahrinheit
     return (value - 273.15) * 9 / 5 + 32;
   }
 
   const weatherEmojis = ['☁️', '❄️', '🌧️', '🌩️', '☀️', '🌫️']
-  const [displayEmoji, setDisplayEmoji] = useState('') 
+  const [displayEmoji, setDisplayEmoji] = useState('')
 
   const [city, setCity] = useState('Minneapolis, mn, us');
 
@@ -63,7 +87,7 @@ export default function App() {
             return weatherEmojis[4]
           } else if (data.weather[0].main === 'Clouds') {
             return weatherEmojis[0]
-          } else { 
+          } else {
             return weatherEmojis[5]
           }
         }
@@ -105,7 +129,7 @@ export default function App() {
         placeholder="Minneapolis, mn, us"
         placeholderTextColor="#e0e0e0"
       />
-      <Text style={{ fontSize:10, color:'white'}}>
+      <Text style={{ fontSize: 10, color: 'white' }}>
         City, State, Country{"\n"}
       </Text>
 
