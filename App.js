@@ -6,6 +6,8 @@ import * as BackgroundFetch  from 'expo-background-fetch';
 import * as TaskManager from 'expo-task-manager';
 
 
+import { config } from './config'
+
 export default function App() {
 
   function kToF(value) { // kelvin to fahrinheit
@@ -27,7 +29,7 @@ export default function App() {
   const [humidity, setHumidity] = useState('');
   const [wind, setWind] = useState('');
 
-  const key = 'd7c3d924d2d80ad96c29dd924a218873';
+  const key = config.API_KEY;
 
   const refresh = () => { // Calls API
 
