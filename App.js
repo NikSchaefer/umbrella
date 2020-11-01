@@ -8,9 +8,17 @@ import * as Notifications from 'expo-notifications';
 import * as Permissions from 'expo-permissions';
 
 
-
-
 import { config } from './config'
+
+
+
+
+
+
+
+
+
+
 
 
 Notifications.setNotificationHandler({
@@ -24,13 +32,46 @@ Notifications.setNotificationHandler({
 export default function App() {
 
 
+  registerForPushNotification = async () => {
+    // Check for existing permissions
+    const { status } = await Permissions.getAsync(Permissions.NOTIFICATIONS);
+    let finalStatus = status;
+
+    // if no existing permission, ask user for permission
+    if (status !== 'granted') {
+      const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
+      finalStatus = status;
+    }
+
+    // if no permission, exit the function.
+    if (finalStatus !== 'granted') {
+      alert('Failed to get push token for push notification!')
+      return;
+    }
+
+    // get push notification token.
+    let token = await Notifications.getExpoPushTokenAsync();
+    alert(token)
+    firebase.database().ref('/users/usersInfo/' + user).update({
+      expoToken: token
+    })
+
+    if (Platform.OS === 'android') {
+      Notifications.createChannelAndroidAsync('default', {
+        name: 'default',
+        sound: false,
+        priority: 'max',
+        vibrate: [0, 250, 250, 250],
+      });
+    }
+  }
+
+
 
   const [expoPushToken, setExpoPushToken] = useState('');
   const [notification, setNotification] = useState(false);
   const notificationListener = useRef();
   const responseListener = useRef();
-
-
 
 
 
@@ -96,12 +137,17 @@ export default function App() {
         else if (data.main === 'Thunderstorm') { warn() }
       })
       .catch(function () {
-        console.log('not found')
+        console.log('not foundf')
+        styles.infoBox.display = 'none'
       });
 
   }
   TaskManager.defineTask('task', refresh) // assigning as background task
   BackgroundFetch.registerTaskAsync('task') // running background task
+
+
+
+
 
   refresh() // calls on load
   return (
@@ -149,6 +195,7 @@ export default function App() {
         <Text style={{ fontSize: 80, padding: 30 }}>{displayEmoji}</Text>
       </View>
 
+
       <TouchableOpacity title="Refresh" onPress={refresh} style={styles.butonContainer}>
         <Text style={{
           color: 'white',
@@ -160,7 +207,7 @@ export default function App() {
 
 
       <View style={styles.footer}>
-        <Text style={styles.footerText}>Footer</Text>
+        <Text style={styles.footerText}>Umbrella</Text>
       </View>
 
 
@@ -236,7 +283,7 @@ const styles = StyleSheet.create({
 
   footer: {
     width: '100%',
-    backgroundColor: '#f3f3f3',
+    backgroundColor: '#00daff',
     position: 'absolute',
     bottom: 0,
   },
