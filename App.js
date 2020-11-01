@@ -11,16 +11,6 @@ import * as Permissions from 'expo-permissions';
 import { config } from './config'
 
 
-
-
-
-
-
-
-
-
-
-
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: true,
@@ -31,40 +21,6 @@ Notifications.setNotificationHandler({
 
 export default function App() {
 
-
-  registerForPushNotification = async () => {
-    // Check for existing permissions
-    const { status } = await Permissions.getAsync(Permissions.NOTIFICATIONS);
-    let finalStatus = status;
-
-    // if no existing permission, ask user for permission
-    if (status !== 'granted') {
-      const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
-      finalStatus = status;
-    }
-
-    // if no permission, exit the function.
-    if (finalStatus !== 'granted') {
-      alert('Failed to get push token for push notification!')
-      return;
-    }
-
-    // get push notification token.
-    let token = await Notifications.getExpoPushTokenAsync();
-    alert(token)
-    firebase.database().ref('/users/usersInfo/' + user).update({
-      expoToken: token
-    })
-
-    if (Platform.OS === 'android') {
-      Notifications.createChannelAndroidAsync('default', {
-        name: 'default',
-        sound: false,
-        priority: 'max',
-        vibrate: [0, 250, 250, 250],
-      });
-    }
-  }
 
 
 
@@ -146,9 +102,6 @@ export default function App() {
   BackgroundFetch.registerTaskAsync('task') // running background task
 
 
-
-
-
   refresh() // calls on load
   return (
     <View style={styles.container}>
@@ -168,7 +121,7 @@ export default function App() {
 
         <Text style={styles.headerText}>☂ Umbrella ☂</Text>
       </View>
-      <Text style={{ color: 'white', padding: 10 }}>City</Text>
+      <Text style={{ color: 'white', padding: 10 }}>Location</Text>
       <TextInput style={styles.input}
         value={city}
         onChangeText={text => setCity(text)}
@@ -214,7 +167,6 @@ export default function App() {
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -222,13 +174,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     display: 'flex',
     flexDirection: 'column',
-
   },
   infoBox: {
     marginTop: 70,
     display: 'flex',
     flexDirection: 'row',
-
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
@@ -236,7 +186,6 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.74,
     shadowRadius: 13.97,
-
     elevation: 21,
   },
   header: {
@@ -248,7 +197,6 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'space-evenly',
     marginBottom: 20,
-
   },
   headerText: {
     color: '#ffffff',
@@ -262,7 +210,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: 'white',
   },
-
   butonContainer: {
     borderRadius: 5,
     marginTop: 10,
@@ -275,12 +222,8 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.74,
     shadowRadius: 13.97,
-
     elevation: 21,
-
   },
-
-
   footer: {
     width: '100%',
     backgroundColor: '#00daff',
@@ -292,5 +235,4 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: 'white'
   },
-
 });
